@@ -16,6 +16,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,json,md,css}\"",
     "tc": "tsx src/utils/normalize-traditional-chars.ts \"src/**/*.{ts,tsx}\" \"docs/**/*.md\"",
     "cli": "tsx src/cli/index.ts",
+    "test:e2e": "node tests/e2e/local-schemes.mjs",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -61,6 +62,7 @@
     "lint-staged": "^16.2.7",
     "markdownlint-cli2": "^0.20.0",
     "markdownlint-cli2-formatter-pretty": "^0.0.9",
+    "playwright": "^1.63.0",
     "prettier": "^3.8.1",
     "tsx": "^4.21.0",
     "typescript": "~5.4.0",
