@@ -19,12 +19,15 @@ export interface AnalyzerOptions {
   maxCodeLength: number
   /** 方案的選重鍵表；鍵位熱力要按它折算，否則二重三重全記在數字鍵上 */
   選重鍵表?: 選重鍵表型别
+  /** 簡碼效率的 N 值網格；不給就用 CLI 自己那一組 */
+  簡碼效率N值列表?: readonly number[]
   onStepStart: (step: string) => void
   onStepDone: (step: string, ms: number) => void
 }
 
 export async function runAllAnalyses(options: AnalyzerOptions): Promise<方案測評結果介面> {
-  const { processedCodeTable, maxCodeLength, 選重鍵表, onStepStart, onStepDone } = options
+  const { processedCodeTable, maxCodeLength, 選重鍵表, 簡碼效率N值列表, onStepStart, onStepDone } =
+    options
   const { 全碼表, 簡碼表, 全碼加選重鍵表, 簡碼加選重鍵表 } = processedCodeTable
 
   // 預加載所有字頻數據
@@ -104,7 +107,8 @@ export async function runAllAnalyses(options: AnalyzerOptions): Promise<方案�
       簡碼加選重鍵表,
       全碼加選重鍵表,
       charFrequencies,
-      maxCodeLength
+      maxCodeLength,
+      簡碼效率N值列表
     )
     onStepDone(step, Date.now() - t0)
   }

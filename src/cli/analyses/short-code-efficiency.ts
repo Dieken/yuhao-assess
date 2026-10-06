@@ -17,7 +17,13 @@ export async function analyzeShortCodeEfficiency(
   shortCodeWithSelectionTable: 碼表型别,
   fullCodeWithSelectionTable: 碼表型别,
   charFrequencies: Record<string, 頻率數據型别>,
-  maxCodeLength: number
+  maxCodeLength: number,
+  /**
+   * N 值網格。默認是 CLI 自己這一組（一路到五萬，給大碼表看全貌）。
+   * `pnpm recompute` 會換成 `簡碼效率N值列表`——存檔要與網頁端對得上，
+   * 對比頁按 N 值反查 0/25/50/100/200/500 那幾欄，網格不含就只能畫「-」。
+   */
+  N值列表: readonly number[] = N_VALUES
 ): Promise<簡碼效率分析結果介面> {
   // 構建簡碼映射（取最短編碼）
   const shortCodeMap = new Map<string, string>()
@@ -38,7 +44,7 @@ export async function analyzeShortCodeEfficiency(
   }
 
   const calc = (freq: 頻率數據型别) =>
-    計算指定字頻下之簡碼效率(freq, shortCodeMap, fullCodeMap, maxCodeLength, N_VALUES)
+    計算指定字頻下之簡碼效率(freq, shortCodeMap, fullCodeMap, maxCodeLength, [...N值列表])
 
   const [知乎, 北語, 臺標, 古籍, 繁簡] = await Promise.all([
     Promise.resolve(calc(charFrequencies['知乎簡體字頻'] || {})),

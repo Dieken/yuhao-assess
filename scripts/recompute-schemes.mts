@@ -6,14 +6,22 @@
  * 而對比頁會把「當前方案現算的值」和「内置方案的存檔值」並排顯示，
  * 口徑不一致排名就是錯的。這個腳本用碼表重跑一遍，讓存檔值回到同一口徑。
  *
- * 重算範圍：速度當量分析、鍵位熱力、連續文本當量（都受當量表和選重鍵口徑影響），
- * 外加靜態重碼分析（它受 charsets.json 的字集定義影響）。
- * 其餘測評結果（候選個數、簡碼效率）不受這幾樣影響，原樣保留。
+ * 重算範圍：**全部六項測評結果 ＋ 連續文本當量**，一項不留。
  *
- * 靜態重碼本來是「原樣保留」的，理由是它不受當量表與選重鍵口徑影響——這沒錯，
- * 可它受**字集定義**影響，而字集是會改的：2026-10-06 查出存檔裏所有方案的
- * GB2312 一行都還是舊的（實際字符數 6764，而 charsets.json 是 6763），
- * 連帶重碼字數與組數都多 1–2，而且永遠不會自己回到新口徑。
+ * 從前只重算「受當量表和選重鍵口徑影響」的那幾項，其餘原樣保留。那個劃分站不住：
+ * 靜態重碼受 charsets.json 的字集定義影響，動態選重、候選個數同理，而這些都會改。
+ * 2026-10-06 對賬查出存檔裏所有方案的 GB2312 一行都還是舊的（實際字符數 6764，
+ * 而 charsets.json 是 6763），五筆986 的 GB2312 重碼字數更是 427 對 123——
+ * 都是「不重算就永遠不會回到新口徑」。既然如此就全部重算，別再分類。
+ *
+ * 六項直接調 `src/cli/analyzer.ts` 的 `runAllAnalyses`，與 `pnpm cli` 同一支；
+ * 這裏只額外算網頁端纔有的連續文本當量。
+ *
+ * **算出來一樣就不動那個文件**：各分析塊逐項比對（忽略它自己的時間戳），
+ * 全等就把舊的那一塊原樣留下，連 更新時間 都不改；整個方案都沒變就根本不寫盤。
+ * 這樣 `git status` 裏列出來的就真的是「數值變了」的那幾個方案。
+ * 連續文本當量用的是定種子的蒙特卡洛（`隨機種子` 默認 20260801），所以同樣的輸入
+ * 跑幾次都是同一個結果，不會每次都把文件碰髒。
  *
  * 連續文本當量存的是分佈的格點計數加幾個統計量，不是幾萬個原始樣本值，
  * 每個方案只多出幾 KB，換來的是導入 JSON 的人不必再等一次抽樣就能看圖。
@@ -61,6 +69,8 @@ globalThis.fetch = (async (資源: unknown, 選項?: unknown) => {
   return 原生fetch(資源 as string, 選項 as RequestInit)
 }) as typeof fetch
 
+const { runAllAnalyses } = await import('../src/cli/analyzer.ts')
+const { 簡碼效率N值列表 } = await import('../src/services/shortCodeEfficiencyService.ts')
 const { 碼表處理服務實例 } = await import('../src/services/codeTableService.ts')
 const { 字頻表服務類别 } = await import('../src/services/charFrequencyService.ts')
 const { 從碼表計算加權速度當量, 生成一級簡碼加選重鍵表, 生成二級簡碼加選重鍵表 } =
@@ -172,11 +182,26 @@ const 碼型列表 = [
   { 後綴: '全部簡碼速度當量', 取表: (t: 各碼表) => t.全簡 },
 ] as const
 
-interface 各碼表 {
-  全碼: Map<string, string[]>
-  一簡: Map<string, string[]>
-  二簡: Map<string, string[]>
-  全簡: Map<string, string[]>
+/** 各分析塊自己帶的時間戳字段，比對時一律忽略 */
+const 時間戳字段 = new Set(['更新時間', '計算時間'])
+
+/** 剝掉時間戳之後深比一份結果；用來判斷「這一塊到底變了沒有」 */
+function 內容相同(甲: unknown, 乙: unknown): boolean {
+  return JSON.stringify(去時間戳(甲)) === JSON.stringify(去時間戳(乙))
+}
+
+function 去時間戳(值: unknown): unknown {
+  if (Array.isArray(值)) return 值.map(去時間戳)
+  if (值 && typeof 值 === 'object') {
+    // 鍵名排序，免得字段順序不同被當成內容不同
+    const 出: Record<string, unknown> = {}
+    for (const k of Object.keys(值 as Record<string, unknown>).sort()) {
+      if (時間戳字段.has(k)) continue
+      出[k] = 去時間戳((值 as Record<string, unknown>)[k])
+    }
+    return 出
+  }
+  return 值
 }
 
 // ---------------------------------------------------------------------------
@@ -242,6 +267,7 @@ async function main() {
   }
 
   const 已更新: string[] = []
+  const 未變: string[] = []
   const 已跳過: Array<{ 方案: string; 原因: string }> = []
 
   for (const 鍵名 of 方案鍵名列表) {
@@ -281,47 +307,29 @@ async function main() {
         continue
       }
 
-      const 各碼表: 各碼表 = {
-        全碼: 處理結果.全碼加選重鍵表,
-        全簡: 處理結果.簡碼加選重鍵表,
-        一簡: 生成一級簡碼加選重鍵表(處理結果.簡碼加選重鍵表, 處理結果.全碼加選重鍵表, []),
-        二簡: 生成二級簡碼加選重鍵表(處理結果.簡碼加選重鍵表, 處理結果.全碼加選重鍵表, []),
-      }
+      // 六項測評全交給 CLI 那支 runAllAnalyses，與 `pnpm cli` 同一條路；
+      // 這裏不再自己拼速度當量與鍵位熱力，免得兩邊慢慢長歪。
+      const 六項 = await runAllAnalyses({
+        processedCodeTable: 處理結果,
+        maxCodeLength: 配置.方案參數.最大碼長,
+        選重鍵表,
+        簡碼效率N值列表,
+        onStepStart: () => {},
+        onStepDone: () => {},
+      })
 
-      // 速度當量：5 種字頻 × 4 種碼型
-      const 速度當量分析: Record<string, unknown> = {}
-      for (const 來源 of 字頻來源列表) {
-        const 字頻 = 字頻表.get(來源) ?? {}
-        for (const { 後綴, 取表 } of 碼型列表) {
-          速度當量分析[`${來源}${後綴}`] = 從碼表計算加權速度當量(
-            取表(各碼表),
-            字頻,
-            當量表,
-            選重鍵表
-          )
-        }
-      }
-      速度當量分析.更新時間 = new Date().toISOString()
-
-      // 鍵位熱力：用北語簡體字頻，與 KeyboardHeatmapPage 的 當前字頻 保持一致
-      const 熱力字頻 = 字頻表.get('北語簡體字頻') ?? {}
-      const 鍵位熱力 = {
-        全碼: 計算按鍵計數(各碼表.全碼, 熱力字頻, 選重鍵表),
-        簡碼: 計算按鍵計數(各碼表.全簡, 熱力字頻, 選重鍵表),
-      }
-
-      // 靜態重碼：用不帶選重鍵的碼表，與網頁端和 CLI 同一個口徑
-      const 靜態重碼分析 = await analyzeStaticDuplicate(處理結果.全碼表, 處理結果.簡碼表)
+      const 全碼加選重 = 處理結果.全碼加選重鍵表
+      const 全簡加選重 = 處理結果.簡碼加選重鍵表
 
       // 連續文本當量：存分佈的格點計數，導入方案的人不必再抽樣一次
       const 連續文本當量 = 壓縮連續文本當量結果({
         統計: {
-          全碼加選重: 蒙特卡洛連續文本當量(連續語料, 各碼表.全碼, 當量表, {
+          全碼加選重: 蒙特卡洛連續文本當量(連續語料, 全碼加選重, 當量表, {
             窗口長度: 連續文本當量窗口長度,
             樣本數: 連續文本當量樣本數,
             選重鍵表,
           }),
-          全部簡碼加選重: 蒙特卡洛連續文本當量(連續語料, 各碼表.全簡, 當量表, {
+          全部簡碼加選重: 蒙特卡洛連續文本當量(連續語料, 全簡加選重, 當量表, {
             窗口長度: 連續文本當量窗口長度,
             樣本數: 連續文本當量樣本數,
             選重鍵表,
@@ -333,43 +341,60 @@ async function main() {
       })
 
       const 舊值 = 配置.測評結果?.速度當量分析?.繁簡聯合字頻全碼速度當量
-      const 新值 = 速度當量分析.繁簡聯合字頻全碼速度當量 as number
+      const 新值 = 六項.速度當量分析?.繁簡聯合字頻全碼速度當量 as number
       const 差值 = typeof 舊值 === 'number' ? 新值 - 舊值 : NaN
 
-      配置.測評結果 = {
-        ...(配置.測評結果 ?? {}),
-        速度當量分析,
-        鍵位熱力,
-        連續文本當量,
-        靜態重碼分析,
+      // 逐塊比對：算出來和存檔一樣就把舊的那一塊原樣留下（連它的時間戳一起），
+      // 這樣沒變的方案文件連一個字節都不會動。
+      const 舊測評 = (配置.測評結果 ?? {}) as Record<string, unknown>
+      const 新測評: Record<string, unknown> = { ...六項, 連續文本當量 }
+      const 變了的塊: string[] = []
+      for (const 塊名 of Object.keys(新測評)) {
+        if (內容相同(舊測評[塊名], 新測評[塊名])) {
+          新測評[塊名] = 舊測評[塊名]
+        } else {
+          變了的塊.push(塊名)
+        }
       }
+      let 有變 = 變了的塊.length > 0
+      配置.測評結果 = { ...舊測評, ...新測評 }
       配置.方案參數.選重鍵表 = 選重鍵表
-      配置.碼表元數據 = {
+      const 新碼表元數據 = {
         ...碼表元數據,
         哈希值: await 計算碼表哈希(rawCodeTable),
         總字符數: 處理結果.全碼表.size,
       }
-      配置.元數據.更新時間 = new Date().toISOString()
+      if (!內容相同(配置.碼表元數據, 新碼表元數據)) 有變 = true
+      配置.碼表元數據 = 新碼表元數據
 
-      if (!試運行) fs.writeFileSync(方案路徑, JSON.stringify(配置, null, 2) + '\n')
+      // 只有真的算出不同的數纔動 更新時間，否則整個文件保持原樣
+      if (有變) 配置.元數據.更新時間 = new Date().toISOString()
+
+      const 新文本 = JSON.stringify(配置, null, 2) + '\n'
+      const 落盤 = 有變 && 新文本 !== fs.readFileSync(方案路徑, 'utf8')
+      if (!試運行 && 落盤) fs.writeFileSync(方案路徑, 新文本)
 
       const 差值文字 = Number.isNaN(差值)
         ? '（無舊值）'
         : `${差值 >= 0 ? '+' : ''}${差值.toFixed(4)}`
       const 連續均值 = 連續文本當量.統計.全碼加選重?.平均數 ?? NaN
       console.log(
-        `✅ ${鍵名.padEnd(14)} ${碼表.來源.padEnd(2)} ${處理結果.全碼表.size.toString().padStart(7)} 字  ` +
+        `${有變 ? '✅' : '⚪️'} ${鍵名.padEnd(14)} ${碼表.來源.padEnd(2)} ${處理結果.全碼表.size.toString().padStart(7)} 字  ` +
           `繁簡聯合全碼當量 ${新值.toFixed(4)}  ${差值文字}  ` +
-          `連續文本 μ ${連續均值.toFixed(4)}`
+          `連續文本 μ ${連續均值.toFixed(4)}` +
+          (有變 ? '  改了：' + 變了的塊.join('、') : '  （無變化，未改動文件）')
       )
-      已更新.push(鍵名)
+      if (有變) 已更新.push(鍵名)
+      else 未變.push(鍵名)
     } catch (錯誤) {
       已跳過.push({ 方案: 鍵名, 原因: 錯誤 instanceof Error ? 錯誤.message : String(錯誤) })
     }
   }
 
   console.log('')
-  console.log(`🎉 完成：更新 ${已更新.length} 個，跳過 ${已跳過.length} 個`)
+  console.log(
+    `🎉 完成：更新 ${已更新.length} 個，無變化 ${未變.length} 個，跳過 ${已跳過.length} 個`
+  )
   if (已跳過.length > 0) {
     console.log('')
     console.log('⚠️  以下方案未重算，存檔數值仍是舊口徑：')

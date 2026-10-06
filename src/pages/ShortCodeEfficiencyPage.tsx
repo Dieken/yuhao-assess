@@ -8,7 +8,7 @@ import { 碼表原子狀態 } from '../atoms/codeTable'
 import { 簡碼效率分析原子狀態 } from '../atoms/shortCodeEfficiency'
 import { 字頻表緩存原子狀態 } from '../atoms/charFrequency'
 import { 當前方案原子狀態 } from '../atoms/scheme'
-import { 計算指定字頻下之簡碼效率 } from '../services/shortCodeEfficiencyService'
+import { 計算指定字頻下之簡碼效率, 簡碼效率N值列表 } from '../services/shortCodeEfficiencyService'
 import type { 處理後的碼表結果介面 } from '../types'
 
 const { Paragraph } = Typography
@@ -251,36 +251,7 @@ const ShortCodeEfficiencyPage: React.FC = () => {
       // 步驟 3：調用 Service 函數計算效率
       // 這裏使用的是已處理好的 Map，不需要再處理選重邏輯
 
-      const N值列表 = [
-        0, // 全部使用全碼（基準線）
-        5,
-        10,
-        25,
-        50,
-        75,
-        100,
-        150,
-        200,
-        250,
-        300,
-        400,
-        500,
-        600,
-        700,
-        800,
-        900,
-        1000,
-        1100,
-        1200,
-        1300,
-        1400,
-        1500,
-        1600,
-        1700,
-        1800,
-        1900,
-        2000, // 前 2000 個字使用簡碼
-      ]
+      const N值列表 = [...簡碼效率N值列表]
       const 新結果 = {
         知乎簡體字頻下之簡碼效率: 計算指定字頻下之簡碼效率(
           知乎簡體字頻,
