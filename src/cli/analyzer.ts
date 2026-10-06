@@ -10,19 +10,21 @@ import { analyzeMaximumCandidates } from './analyses/maximum-candidates'
 import { analyzeSpeedEquivalent } from './analyses/speed-equivalent'
 import { analyzeShortCodeEfficiency } from './analyses/short-code-efficiency'
 import { analyzeKeyboardHeatmap } from './analyses/keyboard-heatmap'
-import type { 方案測評結果介面 } from '../types/scheme'
+import type { 方案測評結果介面, 選重鍵表型别 } from '../types/scheme'
 import type { 處理後的碼表結果介面 } from '../types'
 import type { 頻率數據型别 } from '../types'
 
 export interface AnalyzerOptions {
   processedCodeTable: 處理後的碼表結果介面
   maxCodeLength: number
+  /** 方案的選重鍵表；鍵位熱力要按它折算，否則二重三重全記在數字鍵上 */
+  選重鍵表?: 選重鍵表型别
   onStepStart: (step: string) => void
   onStepDone: (step: string, ms: number) => void
 }
 
 export async function runAllAnalyses(options: AnalyzerOptions): Promise<方案測評結果介面> {
-  const { processedCodeTable, maxCodeLength, onStepStart, onStepDone } = options
+  const { processedCodeTable, maxCodeLength, 選重鍵表, onStepStart, onStepDone } = options
   const { 全碼表, 簡碼表, 全碼加選重鍵表, 簡碼加選重鍵表 } = processedCodeTable
 
   // 預加載所有字頻數據
@@ -111,7 +113,7 @@ export async function runAllAnalyses(options: AnalyzerOptions): Promise<方案�
     const step = '鍵位熱力分析'
     onStepStart(step)
     const t0 = Date.now()
-    result.鍵位熱力 = await analyzeKeyboardHeatmap(全碼加選重鍵表, 簡碼加選重鍵表, 北語)
+    result.鍵位熱力 = await analyzeKeyboardHeatmap(全碼加選重鍵表, 簡碼加選重鍵表, 北語, 選重鍵表)
     onStepDone(step, Date.now() - t0)
   }
 

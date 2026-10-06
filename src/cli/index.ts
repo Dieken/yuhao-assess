@@ -161,6 +161,7 @@ async function main(): Promise<void> {
     analysisResult = await runAllAnalyses({
       processedCodeTable,
       maxCodeLength: scheme.方案參數.最大碼長,
+      選重鍵表: scheme.方案參數.選重鍵表,
       onStepStart: logProgress,
       onStepDone: logStepDone,
     })
