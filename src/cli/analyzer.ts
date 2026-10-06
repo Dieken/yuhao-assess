@@ -89,7 +89,8 @@ export async function runAllAnalyses(options: AnalyzerOptions): Promise<方案�
       全碼加選重鍵表,
       簡碼加選重鍵表,
       charFrequencies,
-      equivTable
+      equivTable,
+      選重鍵表
     )
     onStepDone(step, Date.now() - t0)
   }
