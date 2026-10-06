@@ -30,27 +30,46 @@ function loadScheme(key: string): Promise<Config> { ... }
 
 ## 🚀 快速開始
 
-````bash
-# 安裝依賴
-pnpm install
-
-# 下載數據文件和内置方案
-node scripts/fetch-data.js
-
-# 開發模式
-pnpm dev
-
-# 構建生産版本
-pnpm build
-
-# 代碼格式化
-pnpm format
-
-# 字形轉換（台灣繁體 → 大陸通規繁體）
-pnpm tc
 ```bash
-# 命令示例
-````
+pnpm install          # 安裝依賴
+pnpm fetch            # 下載數據文件和内置方案（開發前先跑一次）
+pnpm dev              # 開發模式
+pnpm build            # 構建生産版本
+pnpm format           # 代碼格式化
+pnpm tc               # 字形轉換（台灣繁體 → 大陸通規繁體）
+pnpm test:e2e         # 端到端檢查（用本機 Chrome，需先 pnpm build）
+```
+
+## 🖥 命令行測評（`pnpm cli`）
+
+把網站那六項測評搬到命令行，跑的是**與網頁端同一批服務代碼**，不是另寫一份。
+
+```bash
+pnpm cli <碼表文件> --scheme <方案配置.jsonc> [--format json|table] [--output 文件]
+```
+
+方案檔不存在時會先生成一份帶註釋的模板然後退出，填好再跑：
+
+```bash
+pnpm cli ~/Downloads/某方案.txt --scheme ./某方案.jsonc
+# → [提示] 方案配置文件不存在，已在以下路徑生成模板文件，請填寫後重新運行
+```
+
+模板裏要填的是方案名、標識符、**最大碼長**、**編碼終止指示符列表**、**選重鍵表**。
+手上已有現成的方案 JSON 就直接拿它當 `--scheme`，不必走模板：
+
+```bash
+pnpm cli ../yuhao-assess-data/tables/tiger.txt \
+         --scheme ../yuhao-assess-data/schemes/tiger.json --format table
+```
+
+- 碼表認 `.txt .csv .tsv .yaml .yml`；分隔符與首列類型讀方案裏的 `碼表元數據`。
+- **進度印在 stderr，結果印在 stdout**，所以 `> 結果.json` 不會混進進度行；也可以用 `--output`。
+- `--format table` 是扁平的「路徑 ⇥ 值」，好 grep；默認 `json` 是完整結構。
+- 要先有數據：`pnpm fetch` 把字頻表、當量表、字集表拉到 `public/`。
+- 它**不算連續文本當量**（那是網頁端專有的，由 `pnpm recompute` 補）。
+- 簡碼效率的 N 值網格默認是 CLI 自己那一組（到五萬）；要與網站存檔對齊得用
+  `簡碼效率N值列表`，`pnpm recompute` 已經這麽做了。
 
 ## 📦 項目結構
 
