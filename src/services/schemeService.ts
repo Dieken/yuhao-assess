@@ -3,6 +3,7 @@
  * 提供方案的加載、導出、驗證等功能
  */
 
+import { 生成本地標識符 } from '../atoms/localSchemes'
 import { 默認選重鍵表 } from '../types/scheme'
 import type { 方案配置介面, 方案列表項介面 } from '../types/scheme'
 
@@ -211,7 +212,7 @@ export function 創建空白方案(): 方案配置介面 {
     元數據: {
       方案名: '宇宙無敵超強輸入法的草稿',
       作者: '無敵超強方案設計師',
-      標識符: 'new-scheme',
+      標識符: 生成本地標識符(),
       版本: 'v0.0.1',
       創建時間: 當前時間,
       更新時間: 當前時間,
