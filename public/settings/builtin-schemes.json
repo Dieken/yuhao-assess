@@ -143,6 +143,30 @@
       "name": "淅碼",
       "description": "",
       "enabled": true
+    },
+    {
+      "key": "yaoling",
+      "name": "妖靈",
+      "description": "",
+      "enabled": true
+    },
+    {
+      "key": "weiyang",
+      "name": "未央",
+      "description": "",
+      "enabled": true
+    },
+    {
+      "key": "moling",
+      "name": "魔靈",
+      "description": "",
+      "enabled": true
+    },
+    {
+      "key": "xiaoming",
+      "name": "瀟明",
+      "description": "",
+      "enabled": true
     }
   ]
 }
