@@ -1,10 +1,10 @@
 /**
- * Node.js 适配层
+ * Node.js 適配層
  *
- * 在 Node.js 环境中替代浏览器 API：
+ * 在 Node.js 環境中替代瀏覽器 API：
  * - 用 fs.promises.readFile 替代 fetch
- * - 用进程内存 Map 替代 localStorage
- * - 初始化时将数据注入 Jotai 默认 store，使现有 charsetService 的同步函数可用
+ * - 用進程内存 Map 替代 localStorage
+ * - 初始化時將數據注入 Jotai 默認 store，使現有 charsetService 的同步函數可用
  */
 
 import { promises as fs } from 'node:fs'
@@ -15,10 +15,10 @@ import { 字符集數據原子狀態, CJK區塊數據原子狀態 } from '../ato
 import type { 字符集數據型别, CJK區塊數據型别 } from '../atoms/charset'
 import type { 頻率數據型别, 頻數數據型别, 當量表介面 } from '../types'
 
-// ─── 路径定位 ────────────────────────────────────────────────────────────────
+// ─── 路徑定位 ────────────────────────────────────────────────────────────────
 
-// 使用 import.meta.url 定位到项目根目录下的 public/ 目录
-// 本文件位于 src/cli/node-adapter.ts，向上两级到项目根
+// 使用 import.meta.url 定位到項目根目錄下的 public/ 目錄
+// 本文件位於 src/cli/node-adapter.ts，向上兩級到項目根
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const PROJECT_ROOT = join(__dirname, '..', '..')
@@ -31,15 +31,15 @@ export function getPublicSettingsDir(): string {
   return join(PROJECT_ROOT, 'public', 'settings')
 }
 
-// ─── 进程内存缓存（替代 localStorage）────────────────────────────────────────
+// ─── 進程内存緩存（替代 localStorage）────────────────────────────────────────
 
 const memoryCache = new Map<string, unknown>()
 
-// ─── 文件读取 ────────────────────────────────────────────────────────────────
+// ─── 文件讀取 ────────────────────────────────────────────────────────────────
 
 /**
- * 读取并解析 JSON 文件，带进程内存缓存
- * 文件缺失时抛出含文件名和 pnpm run fetch 提示的错误
+ * 讀取並解析 JSON 文件，帶進程内存緩存
+ * 文件缺失時抛出含文件名和 pnpm run fetch 提示的錯誤
  */
 export async function readJsonFile<T>(filePath: string): Promise<T> {
   const cached = memoryCache.get(filePath)
@@ -53,7 +53,7 @@ export async function readJsonFile<T>(filePath: string): Promise<T> {
   } catch (err: unknown) {
     if (isNodeError(err) && err.code === 'ENOENT') {
       const fileName = filePath.split('/').pop() ?? filePath
-      throw new Error('[错误] 数据文件缺失：' + fileName + '\n请运行 pnpm run fetch 下载数据文件')
+      throw new Error('[錯誤] 數據文件缺失：' + fileName + '\n請運行 pnpm run fetch 下載數據文件')
     }
     throw err
   }
@@ -63,7 +63,7 @@ export async function readJsonFile<T>(filePath: string): Promise<T> {
   return parsed
 }
 
-// ─── 字频数据加载 ─────────────────────────────────────────────────────────────
+// ─── 字頻數據加載 ─────────────────────────────────────────────────────────────
 
 const FREQ_FILE_MAP: Record<string, string> = {
   北語簡體字頻: 'charAbsoluteFrequencySC.json',
@@ -82,7 +82,7 @@ function normalizeFreq(raw: 頻數數據型别): 頻率數據型别 {
 }
 
 /**
- * 加载指定类型的字频数据（归一化为相对频率）
+ * 加載指定類型的字頻數據（歸一化爲相對頻率）
  */
 export async function loadCharFrequency(
   type: '北語簡體字頻' | '臺標繁體字頻' | '繁簡聯合字頻' | '知乎簡體字頻' | '古籍繁體字頻'
@@ -110,7 +110,7 @@ export async function loadCharFrequency(
 
   const fileName = FREQ_FILE_MAP[type]
   if (!fileName) {
-    throw new Error('未知字频类型：' + type)
+    throw new Error('未知字頻類型：' + type)
   }
 
   const filePath = join(getPublicDataDir(), fileName)
@@ -120,10 +120,10 @@ export async function loadCharFrequency(
   return normalized
 }
 
-// ─── 字符集数据加载 ───────────────────────────────────────────────────────────
+// ─── 字符集數據加載 ───────────────────────────────────────────────────────────
 
 /**
- * 加载字符集数据（charsets.json）
+ * 加載字符集數據（charsets.json）
  */
 export async function loadCharsetData(): Promise<字符集數據型别> {
   const filePath = join(getPublicDataDir(), 'charsets.json')
@@ -131,24 +131,24 @@ export async function loadCharsetData(): Promise<字符集數據型别> {
 }
 
 /**
- * 加载 CJK 区块数据（cjkBlocks.json）
+ * 加載 CJK 區塊數據（cjkBlocks.json）
  */
 export async function loadCJKBlockData(): Promise<CJK區塊數據型别> {
   const filePath = join(getPublicSettingsDir(), 'cjkBlocks.json')
   return readJsonFile<CJK區塊數據型别>(filePath)
 }
 
-// ─── 当量表加载 ───────────────────────────────────────────────────────────────
+// ─── 當量表加載 ───────────────────────────────────────────────────────────────
 
 /**
- * 加载速度当量表（equivTable.json）
- * 返回按键 -> 当量值的映射
+ * 加載速度當量表（equivTable.json）
+ * 返回按鍵 -> 當量值的映射
  */
 export async function loadEquivTable(): Promise<Record<string, number>> {
   const filePath = join(getPublicSettingsDir(), 'equivTable.json')
-  const raw = await readJsonFile<当量表原始格式>(filePath)
+  const raw = await readJsonFile<當量表原始格式>(filePath)
 
-  // equivTable.json 可能是 当量表介面 格式（含 data 字段）或直接是 Record<string, number>
+  // equivTable.json 可能是 當量表介面 格式（含 data 字段）或直接是 Record<string, number>
   if (raw && typeof raw === 'object' && 'data' in raw && typeof raw.data === 'object') {
     return raw.data as Record<string, number>
   }
@@ -156,17 +156,17 @@ export async function loadEquivTable(): Promise<Record<string, number>> {
 }
 
 // equivTable.json 的原始格式（可能含 data 字段）
-type 当量表原始格式 = 當量表介面 | Record<string, number>
+type 當量表原始格式 = 當量表介面 | Record<string, number>
 
-// ─── 适配层初始化 ─────────────────────────────────────────────────────────────
+// ─── 適配層初始化 ─────────────────────────────────────────────────────────────
 
 /**
- * 初始化 Node.js 适配层
+ * 初始化 Node.js 適配層
  *
- * 将 CJK 区块数据和字符集数据注入 Jotai 默认 store，
- * 使 charsetService.ts 中的同步字符集检查函数（isInCJKToJ 等）可以正常工作。
+ * 將 CJK 區塊數據和字符集數據注入 Jotai 默認 store，
+ * 使 charsetService.ts 中的同步字符集檢查函數（isInCJKToJ 等）可以正常工作。
  *
- * 必须在调用任何分析函数之前调用此函数。
+ * 必須在調用任何分析函數之前調用此函數。
  */
 export async function initAdapter(): Promise<void> {
   const store = getDefaultStore()
@@ -177,7 +177,7 @@ export async function initAdapter(): Promise<void> {
   store.set(字符集數據原子狀態, charsetData)
 }
 
-// ─── 工具函数 ────────────────────────────────────────────────────────────────
+// ─── 工具函數 ────────────────────────────────────────────────────────────────
 
 function isNodeError(err: unknown): err is NodeJS.ErrnoException {
   return err instanceof Error && 'code' in err

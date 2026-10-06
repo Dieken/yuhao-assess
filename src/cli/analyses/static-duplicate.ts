@@ -1,6 +1,6 @@
 /**
- * 静态重码分析
- * 复用 duplicateAnalysisService 中的 計算某字符集的重碼數據，转换返回结构
+ * 靜態重碼分析
+ * 複用 duplicateAnalysisService 中的 計算某字符集的重碼數據，轉換返回結構
  */
 
 import { 計算某字符集的重碼數據 } from '../../services/duplicateAnalysisService'

@@ -1,6 +1,6 @@
 /**
- * 动态选重分析
- * 复用 duplicateAnalysisService 中的计算函数
+ * 動態選重分析
+ * 複用 duplicateAnalysisService 中的計算函數
  */
 
 import { 計算動態選重率, 計算原始碼表的動態選重率 } from '../../services/duplicateAnalysisService'
@@ -36,12 +36,12 @@ export async function analyzeDynamicDuplicate(
     const freq = charFrequencies[freqType] || {}
     const keys = KEY_MAP[freqType]!
 
-    // 按字频重排模式：复用 duplicateAnalysisService
+    // 按字頻重排模式：複用 duplicateAnalysisService
     const sorted: 動態選重結果介面 = {
       全碼: 計算動態選重率(fullCodeTable, freq, true),
       簡碼: 計算動態選重率(shortCodeTable, freq, true),
     }
-    // 保持原序模式：复用 duplicateAnalysisService
+    // 保持原序模式：複用 duplicateAnalysisService
     const original: 動態選重結果介面 = {
       全碼: 計算原始碼表的動態選重率(fullCodeWithSelectionTable, freq),
       簡碼: 計算原始碼表的動態選重率(shortCodeWithSelectionTable, freq),

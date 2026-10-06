@@ -1,6 +1,6 @@
 /**
- * 速度当量分析
- * 计算 5 种字频下全码、一级简码、二级简码、全部简码的速度当量
+ * 速度當量分析
+ * 計算 5 種字頻下全碼、一級簡碼、二級簡碼、全部簡碼的速度當量
  */
 
 import {
@@ -35,7 +35,7 @@ export async function analyzeSpeedEquivalent(
   charFrequencies: Record<string, 頻率數據型别>,
   equivTable: Record<string, number>
 ): Promise<速度當量分析結果介面> {
-  // 生成一级和二级简码表（不传上屏键，使用默认空格键）
+  // 生成一級和二級簡碼表（不傳上屏鍵，使用默認空格鍵）
   const firstShortTable = 生成一級簡碼加選重鍵表(
     shortCodeWithSelectionTable,
     fullCodeWithSelectionTable,

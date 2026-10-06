@@ -1,9 +1,9 @@
 /**
- * 键位热力分析
- * 使用北语简体字频计算全码和简码各按键的加权使用计数
+ * 鍵位熱力分析
+ * 使用北語簡體字頻計算全碼和簡碼各按鍵的加權使用計數
  *
- * 注：按键计数逻辑与 KeyboardHeatmapPage.tsx 中的 計算按鍵計數 等价，
- * 因该函数定义在页面组件内未提取为 service，此处直接实现。
+ * 注：按鍵計數邏輯與 KeyboardHeatmapPage.tsx 中的 計算按鍵計數 等價，
+ * 因該函數定義在頁面組件内未提取爲 service，此處直接實現。
  */
 
 import type { 碼表型别, 頻率數據型别 } from '../../types'
@@ -18,7 +18,7 @@ function calcKeyCount(codeTable: 碼表型别, charFreq: 頻率數據型别): Re
     for (const code of codes) {
       if (!code) continue
       for (const ch of code.toLowerCase()) {
-        // _ 转为 space
+        // _ 轉爲 space
         const key = ch === '_' ? 'space' : ch
         distribution.set(key, (distribution.get(key) || 0) + weight)
       }

@@ -1,6 +1,6 @@
 /**
- * 分析协调器
- * 按顺序调用六项分析，汇总结果，并通过回调报告进度
+ * 分析協調器
+ * 按順序調用六項分析，彙總結果，並通過回調報告進度
  */
 
 import { loadCharFrequency, loadEquivTable } from './node-adapter'
@@ -25,7 +25,7 @@ export async function runAllAnalyses(options: AnalyzerOptions): Promise<方案�
   const { processedCodeTable, maxCodeLength, onStepStart, onStepDone } = options
   const { 全碼表, 簡碼表, 全碼加選重鍵表, 簡碼加選重鍵表 } = processedCodeTable
 
-  // 预加载所有字频数据
+  // 預加載所有字頻數據
   const [知乎, 北語, 臺標, 古籍, 繁簡, equivTable] = await Promise.all([
     loadCharFrequency('知乎簡體字頻'),
     loadCharFrequency('北語簡體字頻'),
@@ -45,18 +45,18 @@ export async function runAllAnalyses(options: AnalyzerOptions): Promise<方案�
 
   const result: 方案測評結果介面 = {}
 
-  // 1. 静态重码分析
+  // 1. 靜態重碼分析
   {
-    const step = '静态重码分析'
+    const step = '靜態重碼分析'
     onStepStart(step)
     const t0 = Date.now()
     result.靜態重碼分析 = await analyzeStaticDuplicate(全碼表, 簡碼表)
     onStepDone(step, Date.now() - t0)
   }
 
-  // 2. 动态选重分析
+  // 2. 動態選重分析
   {
-    const step = '动态选重分析'
+    const step = '動態選重分析'
     onStepStart(step)
     const t0 = Date.now()
     result.動態選重分析 = await analyzeDynamicDuplicate(
@@ -69,18 +69,18 @@ export async function runAllAnalyses(options: AnalyzerOptions): Promise<方案�
     onStepDone(step, Date.now() - t0)
   }
 
-  // 3. 候选个数分析
+  // 3. 候選個數分析
   {
-    const step = '候选个数分析'
+    const step = '候選個數分析'
     onStepStart(step)
     const t0 = Date.now()
     result.候選個數分析 = await analyzeMaximumCandidates(全碼表)
     onStepDone(step, Date.now() - t0)
   }
 
-  // 4. 速度当量分析
+  // 4. 速度當量分析
   {
-    const step = '速度当量分析'
+    const step = '速度當量分析'
     onStepStart(step)
     const t0 = Date.now()
     result.速度當量分析 = await analyzeSpeedEquivalent(
@@ -92,9 +92,9 @@ export async function runAllAnalyses(options: AnalyzerOptions): Promise<方案�
     onStepDone(step, Date.now() - t0)
   }
 
-  // 5. 简码效率分析
+  // 5. 簡碼效率分析
   {
-    const step = '简码效率分析'
+    const step = '簡碼效率分析'
     onStepStart(step)
     const t0 = Date.now()
     result.簡碼效率分析 = await analyzeShortCodeEfficiency(
@@ -106,9 +106,9 @@ export async function runAllAnalyses(options: AnalyzerOptions): Promise<方案�
     onStepDone(step, Date.now() - t0)
   }
 
-  // 6. 键位热力分析
+  // 6. 鍵位熱力分析
   {
-    const step = '键位热力分析'
+    const step = '鍵位熱力分析'
     onStepStart(step)
     const t0 = Date.now()
     result.鍵位熱力 = await analyzeKeyboardHeatmap(全碼加選重鍵表, 簡碼加選重鍵表, 北語)

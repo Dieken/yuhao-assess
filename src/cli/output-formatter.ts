@@ -1,11 +1,11 @@
 /**
- * 输出格式化模块
- * 负责将分析结果格式化为 JSON 或 table 格式输出
+ * 輸出格式化模塊
+ * 負責將分析結果格式化爲 JSON 或 table 格式輸出
  */
 
 /**
- * 递归对对象键名按 Unicode 码点字母序排序。
- * 数组元素顺序不变，但数组内每个对象的键名会被排序。
+ * 遞歸對對象鍵名按 Unicode 碼點字母序排序。
+ * 數組元素順序不變，但數組内每個對象的鍵名會被排序。
  */
 export function sortObjectKeys<T>(obj: T): T {
   if (Array.isArray(obj)) {
@@ -25,11 +25,11 @@ export function sortObjectKeys<T>(obj: T): T {
 }
 
 /**
- * 格式化单个值为 table 格式的字符串：
- * - string：输出原始字符串（不加引号）
- * - number/boolean：输出 JSON 字符串表示
- * - null：输出字面量 "null"
- * - 数组：输出单行 JSON，逗号后加一个空格（如 `["a", "b", "c"]`）
+ * 格式化單個值爲 table 格式的字符串：
+ * - string：輸出原始字符串（不加引號）
+ * - number/boolean：輸出 JSON 字符串表示
+ * - null：輸出字面量 "null"
+ * - 數組：輸出單行 JSON，逗號後加一個空格（如 `["a", "b", "c"]`）
  */
 export function formatTableValue(value: unknown): string {
   if (value === null) {
@@ -42,23 +42,23 @@ export function formatTableValue(value: unknown): string {
     return JSON.stringify(value)
   }
   if (Array.isArray(value)) {
-    // 输出单行 JSON，逗号后加一个空格
+    // 輸出單行 JSON，逗號後加一個空格
     return JSON.stringify(value).replace(/,(?=\S)/g, ', ')
   }
-  // 兜底：其他类型用 JSON.stringify
+  // 兜底：其他類型用 JSON.stringify
   return JSON.stringify(value)
 }
 
 /**
- * 将嵌套对象展开为 [path, value] 对列表。
- * 数组作为原子值处理（不递归展开数组内容）。
- * 对象递归展开，路径用 "." 连接。
+ * 將嵌套對象展開爲 [path, value] 對列表。
+ * 數組作爲原子值處理（不遞歸展開數組内容）。
+ * 對象遞歸展開，路徑用 "." 連接。
  */
 export function flattenToTable(obj: unknown, prefix?: string): Array<[string, string]> {
   const rows: Array<[string, string]> = []
 
   if (Array.isArray(obj)) {
-    // 数组作为原子值处理
+    // 數組作爲原子值處理
     const path = prefix ?? ''
     rows.push([path, formatTableValue(obj)])
     return rows
@@ -68,30 +68,30 @@ export function flattenToTable(obj: unknown, prefix?: string): Array<[string, st
     for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
       const path = prefix !== undefined && prefix !== '' ? `${prefix}.${key}` : key
       if (Array.isArray(value)) {
-        // 数组作为原子值
+        // 數組作爲原子值
         rows.push([path, formatTableValue(value)])
       } else if (value !== null && typeof value === 'object') {
-        // 递归展开嵌套对象
+        // 遞歸展開嵌套對象
         rows.push(...flattenToTable(value, path))
       } else {
-        // 标量叶节点
+        // 標量葉節點
         rows.push([path, formatTableValue(value)])
       }
     }
     return rows
   }
 
-  // 顶层为标量（不常见，但处理一下）
+  // 頂層爲標量（不常見，但處理一下）
   const path = prefix ?? ''
   rows.push([path, formatTableValue(obj)])
   return rows
 }
 
 /**
- * 生成最终输出字符串。
- * - JSON 格式：先 sortObjectKeys，再用 2 空格缩进 JSON.stringify
- * - table 格式：先 sortObjectKeys，再 flattenToTable，按路径字母序排序，
- *   输出 `<path>\t<value>` 行（换行符连接）
+ * 生成最終輸出字符串。
+ * - JSON 格式：先 sortObjectKeys，再用 2 空格縮進 JSON.stringify
+ * - table 格式：先 sortObjectKeys，再 flattenToTable，按路徑字母序排序，
+ *   輸出 `<path>\t<value>` 行（換行符連接）
  */
 export function formatOutput(result: unknown, format: 'json' | 'table'): string {
   const sorted = sortObjectKeys(result)
