@@ -9,8 +9,7 @@ import { 簡碼效率分析原子狀態 } from '../atoms/shortCodeEfficiency'
 import { 字頻表緩存原子狀態 } from '../atoms/charFrequency'
 import { 當前方案原子狀態 } from '../atoms/scheme'
 import { 計算指定字頻下之簡碼效率 } from '../services/shortCodeEfficiencyService'
-import type { 處理後的碼表結果介面, 頻率數據型别 } from '../types'
-import type { 單個字頻簡碼效率結果介面 } from '../atoms/shortCodeEfficiency'
+import type { 處理後的碼表結果介面 } from '../types'
 
 const { Paragraph } = Typography
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAtom } from 'jotai'
 import { Button, Space, Typography, Alert, Spin, Table, message } from 'antd'
 import { ReloadOutlined } from '@ant-design/icons'
@@ -10,7 +10,7 @@ import { 計算某字符集的重碼數據 } from '../services/duplicateAnalysis
 import type { 處理後的碼表結果介面 } from '../types'
 import { 累積漢字集名稱型别 } from '../services/charsetService'
 
-const { Paragraph, Link } = Typography
+const { Paragraph } = Typography
 
 /**
  * 靜態重碼分析頁面
@@ -305,7 +305,7 @@ const StaticDuplicateAnalysisPage: React.FC = () => {
 
     const 靜態重碼數據: 表格數據項[] = 字集顯示順序.map((字集名稱, 索引) => {
       const 字集數據 = 分析結果[字集名稱]
-      // 選重個數為運行時直接計算，不參與導入導出
+      // 選重個數爲運行時直接計算，不參與導入導出
       const 全碼選重個數 = 字集數據.全碼重碼字數 - 字集數據.全碼重碼組數
       const 簡碼選重個數 = 字集數據.簡碼重碼字數 - 字集數據.簡碼重碼組數
       return {

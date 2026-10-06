@@ -2,13 +2,13 @@
  * 本地多方案管理原子狀態
  *
  * 直接使用 方案配置介面 存儲本地方案列表，
- * 以 元數據.標識符 作為唯一鍵，克隆時生成唯一標識符。
+ * 以 元數據.標識符 作爲唯一鍵，克隆時生成唯一標識符。
  */
 
 import { atomWithStorage } from 'jotai/utils'
 import type { 方案配置介面 } from '../types/scheme'
 
-/** 本地方案列表（持久化）。每個元素為完整的 方案配置介面，含 測評結果。 */
+/** 本地方案列表（持久化）。每個元素爲完整的 方案配置介面，含 測評結果。 */
 export const 本地方案列表原子狀態 = atomWithStorage<方案配置介面[]>(
   'yuhao-assess:local-schemes',
   []

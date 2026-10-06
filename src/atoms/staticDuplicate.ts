@@ -3,7 +3,6 @@
  */
 
 import { 累積漢字集名稱型别 } from '@/services/charsetService'
-import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 
 /**

@@ -12,7 +12,7 @@
     "buildcf": "node scripts/build-cf.js",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
-    "lint": "eslint . --ext .ts,.tsx --fix --ignore-path .gitignore",
+    "lint": "eslint . --fix",
     "format": "prettier --write \"**/*.{ts,tsx,json,md,css}\"",
     "tc": "tsx src/utils/normalize-traditional-chars.ts \"src/**/*.{ts,tsx}\" \"docs/**/*.md\"",
     "cli": "tsx src/cli/index.ts",

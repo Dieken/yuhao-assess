@@ -35,7 +35,7 @@ const DATA_FILES = [
 const TEXT_FILES = ['texts/literature.txt']
 
 /**
- * 從 builtin-schemes.json 讀取啟用的方案列表
+ * 從 builtin-schemes.json 讀取啓用的方案列表
  */
 function getEnabledSchemes() {
   const builtinSchemesPath = path.resolve(__dirname, '../public/settings/builtin-schemes.json')
@@ -123,18 +123,18 @@ async function main() {
   console.log(`📦 CDN: ${CDN_BASE}`)
   console.log('')
 
-  // 確保目標目錄存在
+  // 確保目標目録存在
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true })
-    console.log(`✅ 創建目錄: ${DATA_DIR}`)
+    console.log(`✅ 創建目録: ${DATA_DIR}`)
   }
   if (!fs.existsSync(SCHEMES_DIR)) {
     fs.mkdirSync(SCHEMES_DIR, { recursive: true })
-    console.log(`✅ 創建目錄: ${SCHEMES_DIR}`)
+    console.log(`✅ 創建目録: ${SCHEMES_DIR}`)
   }
   if (!fs.existsSync(TEXTS_DIR)) {
     fs.mkdirSync(TEXTS_DIR, { recursive: true })
-    console.log(`✅ 創建目錄: ${TEXTS_DIR}`)
+    console.log(`✅ 創建目録: ${TEXTS_DIR}`)
   }
   console.log('')
 
@@ -152,12 +152,12 @@ async function main() {
     }
 
     console.log('')
-    console.log('📦 下載內置方案...')
+    console.log('📦 下載内置方案...')
     const SCHEME_FILES = getEnabledSchemes()
     if (SCHEME_FILES.length === 0) {
-      console.warn('⚠️  沒有找到啟用的方案，跳過')
+      console.warn('⚠️  没有找到啓用的方案，跳過')
     } else {
-      console.log(`   找到 ${SCHEME_FILES.length} 個啟用的方案`)
+      console.log(`   找到 ${SCHEME_FILES.length} 個啓用的方案`)
       for (const filename of SCHEME_FILES) {
         await downloadFile(filename, SCHEMES_DIR)
       }
@@ -165,7 +165,7 @@ async function main() {
 
     console.log('')
     console.log('🎉 所有文件下載完成！')
-    console.log('💡 現在可以運行 pnpm run dev 啟動開發服務器')
+    console.log('💡 現在可以運行 pnpm run dev 啓動開發服務器')
     process.exit(0) // 顯式退出，避免卡住
   } catch (error) {
     console.error('')
@@ -173,7 +173,7 @@ async function main() {
     console.error('')
     console.error('💡 請確保：')
     console.error('   1. yuhao-assess-data 已推送到 GitHub')
-    console.error('   2. GitHub Pages 已啟用（Settings → Pages → main branch）')
+    console.error('   2. GitHub Pages 已啓用（Settings → Pages → main branch）')
     console.error('   3. 網絡連接正常')
     process.exit(1)
   }

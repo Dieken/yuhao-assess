@@ -19,13 +19,13 @@ export interface CliArgs {
 /**
  * 解析命令行參數
  *
- * @param argv - process.argv 數組（通常從第 2 個元素開始爲用戶參數）
+ * @param argv - process.argv 數組（通常從第 2 個元素開始爲用户參數）
  * @returns 解析後的 CliArgs 對象
  * @throws 當必填參數缺失或參數值無效時抛出錯誤
  */
 export function parseArgs(argv: string[]): CliArgs {
   // argv[0] 是 node/tsx 可執行文件路徑，argv[1] 是腳本路徑
-  // 用戶參數從 argv[2] 開始
+  // 用户參數從 argv[2] 開始
   const args = argv.slice(2)
 
   let codeTablePath = ''

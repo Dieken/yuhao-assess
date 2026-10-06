@@ -2,7 +2,7 @@
 /**
  * 批量重算内置方案的測評結果，並回寫 yuhao-assess-data/schemes/
  *
- * 當量表或選重鍵口徑一改，各方案 JSON 裡存檔的數字就過時了，
+ * 當量表或選重鍵口徑一改，各方案 JSON 裏存檔的數字就過時了，
  * 而對比頁會把「當前方案現算的值」和「内置方案的存檔值」並排顯示，
  * 口徑不一致排名就是錯的。這個腳本用碼表重跑一遍，讓存檔值回到同一口徑。
  *
@@ -12,8 +12,8 @@
  * 連續文本當量存的是分佈的格點計數加幾個統計量，不是幾萬個原始樣本值，
  * 每個方案只多出幾 KB，換來的是導入 JSON 的人不必再等一次抽樣就能看圖。
  *
- * 連續文本當量圖上的參考曲線直接讀各方案 JSON 裡的這份存檔，
- * 不再另外生成常量表，所以這條命令跑完就沒有别的東西要同步了。
+ * 連續文本當量圖上的參考曲線直接讀各方案 JSON 裏的這份存檔，
+ * 不再另外生成常量表，所以這條命令跑完就没有别的東西要同步了。
  *
  * 碼表來源優先級：
  *   1. yuhao-assess-data/tables/<方案>.txt（有就用，便於把碼表釘在某個版本）
@@ -25,7 +25,7 @@
  *   pnpm recompute --refresh  忽略碼表下載緩存，全部重新拉取和重算
  *   pnpm recompute xuma sky   只重算指定方案
  *
- * 注意：腳本直接複用 src/services 下的生產代碼，不另寫一份解析邏輯，
+ * 注意：腳本直接複用 src/services 下的生産代碼，不另寫一份解析邏輯，
  * 以免和網頁端算出不同的結果。瀏覽器 API（fetch）在下面用本地文件墊片。
  */
 
@@ -42,7 +42,7 @@ const SCHEMES_DIR = path.join(DATA_REPO, 'schemes')
 const CACHE_DIR = path.join(APP_DIR, '.cache/tables')
 
 // ---------------------------------------------------------------------------
-// 瀏覽器 API 墊片：服務層用 fetch('/settings/...') 讀數據，這裡改讀本地 public/
+// 瀏覽器 API 墊片：服務層用 fetch('/settings/...') 讀數據，這裏改讀本地 public/
 // ---------------------------------------------------------------------------
 const 原生fetch = globalThis.fetch
 globalThis.fetch = (async (資源: unknown, 選項?: unknown) => {
@@ -72,7 +72,7 @@ const { 默認選重鍵表 } = await import('../src/types/scheme.ts')
 /**
  * 讀取碼表文本
  *
- * 倉庫裡有的碼表存成了 UTF-16LE（如 zhedou.txt），
+ * 倉庫裏有的碼表存成了 UTF-16LE（如 zhedou.txt），
  * 直接按 UTF-8 讀會得到滿是空字節的亂碼、解析出 0 個字符，
  * 所以先按 BOM 判斷編碼。
  */
@@ -97,7 +97,7 @@ function 讀取碼表文本(文件路徑: string): string {
 /**
  * 取得某方案的碼表文本
  *
- * 本地 tables/ 裡有就直接用；没有就按方案 JSON 裡的 碼表下載鏈接 下載，
+ * 本地 tables/ 裏有就直接用；没有就按方案 JSON 裏的 碼表下載鏈接 下載，
  * 並緩存到 .cache/tables/ 供後續重跑複用（`--refresh` 可強制重新拉取）。
  * @returns 碼表文本與來源説明；無法取得時返回 null
  */
@@ -144,7 +144,7 @@ async function 計算碼表哈希(原始碼表: Map<number, [string, string, num
  * 存進方案 JSON 的連續文本當量抽樣設置
  *
  * 必須與 SpeedEquivalentPage 的下拉選單初始值一致：
- * 用戶打開頁面看到的就是這組設置，存檔和界面對得上纔不會誤導。
+ * 用户打開頁面看到的就是這組設置，存檔和界面對得上纔不會誤導。
  */
 const 連續文本當量窗口長度 = 100
 const 連續文本當量樣本數 = 20000
@@ -157,7 +157,7 @@ const 字頻來源列表 = [
   '繁簡聯合字頻',
 ] as const
 
-/** 各字頻來源在結果字段名裡的前綴，與 速度當量分析結果介面 對應 */
+/** 各字頻來源在結果字段名裏的前綴，與 速度當量分析結果介面 對應 */
 const 碼型列表 = [
   { 後綴: '全碼速度當量', 取表: (t: 各碼表) => t.全碼 },
   { 後綴: '一級簡碼速度當量', 取表: (t: 各碼表) => t.一簡 },
@@ -183,8 +183,8 @@ async function main() {
   const 指定方案 = 參數.filter(a => !a.startsWith('--'))
 
   if (!fs.existsSync(SCHEMES_DIR)) {
-    console.error(`❌ 找不到方案目錄: ${SCHEMES_DIR}`)
-    console.error('   請確保 yuhao-assess-data 與 yuhao-assess 在同一層目錄')
+    console.error(`❌ 找不到方案目録: ${SCHEMES_DIR}`)
+    console.error('   請確保 yuhao-assess-data 與 yuhao-assess 在同一層目録')
     process.exit(1)
   }
 
@@ -229,7 +229,7 @@ async function main() {
   if (指定方案.length > 0) {
     方案鍵名列表 = 方案鍵名列表.filter(k => 指定方案.includes(k))
     if (方案鍵名列表.length === 0) {
-      console.error(`❌ 指定的方案都不在啟用列表裡: ${指定方案.join(', ')}`)
+      console.error(`❌ 指定的方案都不在啓用列表裏: ${指定方案.join(', ')}`)
       process.exit(1)
     }
   }
@@ -254,7 +254,7 @@ async function main() {
       if (!碼表) {
         已跳過.push({
           方案: 鍵名,
-          原因: 'tables/ 裡没有碼表，方案 JSON 也没有 元數據.碼表下載鏈接',
+          原因: 'tables/ 裏没有碼表，方案 JSON 也没有 元數據.碼表下載鏈接',
         })
         continue
       }

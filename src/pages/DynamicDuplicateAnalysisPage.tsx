@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { useAtom, useAtomValue } from 'jotai'
+import React, { useState, useEffect } from 'react'
+import { useAtom } from 'jotai'
 import { Button, Space, Typography, Alert, Spin, Tooltip, Modal, Table, Input, message } from 'antd'
 import { ReloadOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'

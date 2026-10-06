@@ -7,7 +7,7 @@ import type { 參考分佈項介面 } from '../services/continuousEquivalentRefe
  * 連續文本當量分佈圖
  *
  * 極簡風格的機率密度圖：直方表示樣本分佈，
- * 虛線標出平均數、中位數與右側 90% 分位數（VaR）。
+ * 虚線標出平均數、中位數與右側 90% 分位數（VaR）。
  */
 
 /** 圖表配色（與站點淺色主題一致） */
@@ -55,8 +55,8 @@ function 常態密度(x: number, 平均數: number, 標準差: number): number {
 interface 標註線介面 {
   標籤: string
   值: number
-  顏色: string
-  虛線: string
+  顔色: string
+  虚線: string
   層級: number
 }
 
@@ -124,10 +124,10 @@ export const ContinuousEquivalentChart: React.FC<屬性介面> = ({
   const 柱寬 = Math.max(1, 箱寬 - 2) // 2px 表面間隙
 
   const 標註線: 標註線介面[] = [
-    { 標籤: '平均數', 值: 統計.平均數, 顏色: 配色.平均線, 虛線: '5 3', 層級: 0 },
-    { 標籤: '中位數', 值: 統計.中位數, 顏色: 配色.中位線, 虛線: '2 3', 層級: 1 },
-    { 標籤: '90% VaR', 值: 統計.九零分位數, 顏色: 配色.分位線, 虛線: '7 4', 層級: 2 },
-    { 標籤: '90% CVaR', 值: 統計.九零條件分位數, 顏色: 配色.分位線, 虛線: '2 2', 層級: 3 },
+    { 標籤: '平均數', 值: 統計.平均數, 顔色: 配色.平均線, 虚線: '5 3', 層級: 0 },
+    { 標籤: '中位數', 值: 統計.中位數, 顔色: 配色.中位線, 虚線: '2 3', 層級: 1 },
+    { 標籤: '90% VaR', 值: 統計.九零分位數, 顔色: 配色.分位線, 虚線: '7 4', 層級: 2 },
+    { 標籤: '90% CVaR', 值: 統計.九零條件分位數, 顔色: 配色.分位線, 虚線: '2 2', 層級: 3 },
   ]
 
   // x 軸刻度：五等分
@@ -160,7 +160,7 @@ export const ContinuousEquivalentChart: React.FC<屬性介面> = ({
       </div>
       {參考分佈 && (
         <div style={{ fontSize: 11, color: 配色.弱化字, marginBottom: 6 }}>
-          {/* 圖例綫樣與圖中一致：虛線 + 斜線填充，而不是一塊實心色 */}
+          {/* 圖例綫樣與圖中一致：虚線 + 斜線填充，而不是一塊實心色 */}
           <svg
             width={16}
             height={9}
@@ -332,16 +332,16 @@ export const ContinuousEquivalentChart: React.FC<屬性介面> = ({
                 x2={x}
                 y1={標籤y + 3}
                 y2={邊距.上 + 繪圖高度}
-                stroke={線.顏色}
+                stroke={線.顔色}
                 strokeWidth={1.5}
-                strokeDasharray={線.虛線}
+                strokeDasharray={線.虚線}
               />
               <text
                 x={標籤靠右 ? x - 5 : x + 5}
                 y={標籤y + 8}
                 textAnchor={標籤靠右 ? 'end' : 'start'}
                 fontSize={11}
-                fill={線.顏色}
+                fill={線.顔色}
                 style={{ fontVariantNumeric: 'tabular-nums' }}
               >
                 {線.標籤} {線.值.toFixed(3)}

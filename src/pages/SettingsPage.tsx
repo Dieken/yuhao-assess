@@ -23,12 +23,10 @@ import { 簡碼效率分析原子狀態 } from '@/atoms/shortCodeEfficiency'
 import { 鍵位熱力分析原子狀態 } from '@/atoms/keyboardHeatmap'
 import { 連續文本當量分析原子狀態 } from '@/atoms/continuousEquivalent'
 import { 碼表原子狀態 } from '@/atoms/codeTable'
-import { 從JSON導入 } from '@/services/schemeService'
 import { 碼表處理服務實例 } from '@/services/codeTableService'
 import { 導出方案配置JSON } from '@/services/exportService'
 import { 觸發所有分析計算 } from '@/services/triggerAnalysisService'
 import type { Color } from 'antd/es/color-picker'
-import type { 方案配置介面 } from '@/types/scheme'
 
 const { Title, Paragraph, Text } = Typography
 

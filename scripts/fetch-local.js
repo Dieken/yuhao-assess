@@ -11,12 +11,12 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// 本地數據源路徑（假設在同級目錄）
+// 本地數據源路徑（假設在同級目録）
 const LOCAL_DATA_SOURCE = path.resolve(__dirname, '../../yuhao-assess-data')
 const PUBLIC_DIR = path.resolve(__dirname, '../public')
 
 /**
- * 從 builtin-schemes.json 讀取啟用的方案列表
+ * 從 builtin-schemes.json 讀取啓用的方案列表
  */
 function getEnabledSchemes() {
   const builtinSchemesPath = path.resolve(__dirname, '../public/settings/builtin-schemes.json')
@@ -38,10 +38,10 @@ function getEnabledSchemes() {
 }
 
 /**
- * 遞歸複製目錄
+ * 遞歸複製目録
  */
 function copyDir(sourceDir, targetDir) {
-  // 確保目標目錄存在
+  // 確保目標目録存在
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true })
   }
@@ -53,7 +53,7 @@ function copyDir(sourceDir, targetDir) {
     const targetPath = path.join(targetDir, entry.name)
 
     if (entry.isDirectory()) {
-      // 遞歸複製子目錄
+      // 遞歸複製子目録
       copyDir(sourcePath, targetPath)
     } else {
       // 複製文件
@@ -77,12 +77,12 @@ function main() {
   console.log(`📦 源路徑: ${LOCAL_DATA_SOURCE}`)
   console.log('')
 
-  // 檢查源目錄是否存在
+  // 檢查源目録是否存在
   if (!fs.existsSync(LOCAL_DATA_SOURCE)) {
-    console.error('❌ 錯誤: 找不到本地數據源目錄')
+    console.error('❌ 錯誤: 找不到本地數據源目録')
     console.error(`   路徑: ${LOCAL_DATA_SOURCE}`)
     console.error('')
-    console.error('💡 請確保 yuhao-assess-data 文件夾與 yuhao-assess 在同一目錄下')
+    console.error('💡 請確保 yuhao-assess-data 文件夾與 yuhao-assess 在同一目録下')
     process.exit(1)
   }
 
@@ -92,18 +92,18 @@ function main() {
   const textsSource = path.join(LOCAL_DATA_SOURCE, 'texts')
 
   if (!fs.existsSync(dataSource)) {
-    console.error('❌ 錯誤: 找不到 data 目錄')
+    console.error('❌ 錯誤: 找不到 data 目録')
     console.error(`   路徑: ${dataSource}`)
     process.exit(1)
   }
 
   if (!fs.existsSync(schemesSource)) {
-    console.error('❌ 錯誤: 找不到 schemes 目錄')
+    console.error('❌ 錯誤: 找不到 schemes 目録')
     console.error(`   路徑: ${schemesSource}`)
     process.exit(1)
   }
 
-  // 確保 public 目錄存在
+  // 確保 public 目録存在
   if (!fs.existsSync(PUBLIC_DIR)) {
     fs.mkdirSync(PUBLIC_DIR, { recursive: true })
   }
@@ -119,24 +119,24 @@ function main() {
     if (fs.existsSync(textsSource)) {
       copyDir(textsSource, path.join(PUBLIC_DIR, 'texts'))
     } else {
-      console.warn('⚠️  找不到 texts 目錄，跳過連續文本語料')
+      console.warn('⚠️  找不到 texts 目録，跳過連續文本語料')
     }
 
     console.log('')
     console.log('📦 複製 schemes 文件夾...')
     const schemesTarget = path.join(PUBLIC_DIR, 'schemes')
 
-    // 確保目標目錄存在
+    // 確保目標目録存在
     if (!fs.existsSync(schemesTarget)) {
       fs.mkdirSync(schemesTarget, { recursive: true })
     }
 
-    // 獲取啟用的方案列表
+    // 獲取啓用的方案列表
     const enabledSchemes = getEnabledSchemes()
     if (enabledSchemes.length === 0) {
-      console.warn('⚠️  沒有找到啟用的方案')
+      console.warn('⚠️  没有找到啓用的方案')
     } else {
-      console.log(`   找到 ${enabledSchemes.length} 個啟用的方案`)
+      console.log(`   找到 ${enabledSchemes.length} 個啓用的方案`)
       for (const schemeFile of enabledSchemes) {
         const sourcePath = path.join(schemesSource, schemeFile)
         const targetPath = path.join(schemesTarget, schemeFile)
@@ -158,7 +158,7 @@ function main() {
 
     console.log('')
     console.log('🎉 所有文件複製完成！')
-    console.log('💡 現在可以運行 pnpm run dev 啟動開發服務器')
+    console.log('💡 現在可以運行 pnpm run dev 啓動開發服務器')
     process.exit(0)
   } catch (error) {
     console.error('')

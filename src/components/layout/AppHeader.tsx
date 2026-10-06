@@ -110,7 +110,7 @@ export function AppHeader() {
    * 加載預設方案列表
    *
    * 頂欄在每個路由下都掛着，由它負責拉列表，
-   * 用戶就算不經過首頁也能直接在頂欄切換方案。
+   * 用户就算不經過首頁也能直接在頂欄切換方案。
    */
   useEffect(() => {
     let 已卸載 = false
@@ -212,7 +212,7 @@ export function AppHeader() {
     message.success('已創建新方案')
   }
 
-  // 克隆：原方案存入 local schemes，當前方案改為克隆名+新標識符
+  // 克隆：原方案存入 local schemes，當前方案改爲克隆名+新標識符
   const 處理克隆方案 = () => {
     if (!當前方案) {
       message.warning('請先選擇或創建方案')
@@ -238,7 +238,7 @@ export function AppHeader() {
         ? prev.map(s => (s.元數據.標識符 === 原標識符 ? 原方案快照 : s))
         : [...prev, 原方案快照]
     })
-    // 2. 當前方案改為克隆名+新標識符，同時加入本地方案列表
+    // 2. 當前方案改爲克隆名+新標識符，同時加入本地方案列表
     const 新標識符 = 生成本地標識符()
     const 新方案名 = 當前方案.元數據.方案名 + 生成克隆後綴()
     const 克隆方案: 方案配置介面 = {
@@ -255,7 +255,7 @@ export function AppHeader() {
     設置當前方案(克隆方案)
     設置當前本地方案標識符(新標識符)
     navigate('/')
-    message.success(`已克隆，當前方案已更名為「${新方案名}」`)
+    message.success(`已克隆，當前方案已更名爲「${新方案名}」`)
   }
 
   // 切換本地方案
@@ -267,10 +267,10 @@ export function AppHeader() {
     message.success(`已切換到「${目標.元數據.方案名}」`)
   }
 
-  // 清除：本地方案則刪除，否則清空所有
+  // 清除：本地方案則删除，否則清空所有
   const 處理清除 = () => {
     if (當前本地方案標識符) {
-      const 被刪名 = 當前方案?.元數據.方案名
+      const 被删名 = 當前方案?.元數據.方案名
       const 新列表 = 本地方案列表.filter(s => s.元數據.標識符 !== 當前本地方案標識符)
       設置本地方案列表(新列表)
       設置當前本地方案標識符(null)
@@ -278,11 +278,11 @@ export function AppHeader() {
         const 末尾 = 新列表[新列表.length - 1]!
         應用方案數據(末尾, 方案Setters)
         設置當前本地方案標識符(末尾.元數據.標識符)
-        message.success(`已刪除「${被刪名}」，已切換到「${末尾.元數據.方案名}」`)
+        message.success(`已删除「${被删名}」，已切換到「${末尾.元數據.方案名}」`)
       } else {
         清空所有原子狀態()
         設置當前方案(null)
-        message.success(`已刪除本地方案「${被刪名}」`)
+        message.success(`已删除本地方案「${被删名}」`)
       }
     } else {
       清空所有原子狀態()
@@ -310,14 +310,14 @@ export function AppHeader() {
   }))
 
   const 清除確認文字 = 當前本地方案標識符
-    ? `確定刪除本地方案「${當前方案?.元數據.方案名}」？`
+    ? `確定删除本地方案「${當前方案?.元數據.方案名}」？`
     : '確定清除所有數據？'
 
   return (
     <HeaderContainer>
       <PageTitle title={顯示標題}>{顯示標題}</PageTitle>
       <Space wrap size="small">
-        {/* 不加文字標籤：左邊的大標題已經是當前方案名，選單指向什麼一望而知 */}
+        {/* 不加文字標籤：左邊的大標題已經是當前方案名，選單指向什麽一望而知 */}
         <Select
           style={{ width: 160 }}
           size="small"

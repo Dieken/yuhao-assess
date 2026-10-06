@@ -17,7 +17,7 @@ import type { 頻率數據型别, 頻數數據型别, 當量表介面 } from '..
 
 // ─── 路徑定位 ────────────────────────────────────────────────────────────────
 
-// 使用 import.meta.url 定位到項目根目錄下的 public/ 目錄
+// 使用 import.meta.url 定位到項目根目録下的 public/ 目録
 // 本文件位於 src/cli/node-adapter.ts，向上兩級到項目根
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

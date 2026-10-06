@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react'
 import { Card, Tabs, Checkbox, Button, Space, Alert, Modal, Spin, message } from 'antd'
-import { ReloadOutlined, QuestionCircleOutlined, DownloadOutlined } from '@ant-design/icons'
+import { ReloadOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { useAtom } from 'jotai'
 import styled from 'styled-components'
 import { 碼表原子狀態 } from '@/atoms/codeTable'

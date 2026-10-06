@@ -3,7 +3,7 @@
  * 處理打字速度相關的計算和分析
  */
 
-import type { 碼表型别, 頻率數據型别 } from '../types'
+import type { 碼表型别 } from '../types'
 import { 默認選重鍵表 } from '../types/scheme'
 import type { 選重鍵表型别 } from '../types/scheme'
 
@@ -12,7 +12,7 @@ import type { 選重鍵表型别 } from '../types/scheme'
  *
  * 碼表生成時，第 n 選的編碼末尾補的是數字 n。但多數方案並不用數字鍵選重，
  * 而是用 `;` 選二重、`'` 選三重——這兩個鍵在基準行、數字鍵在上排，
- * 擊鍵成本差別很大，所以做各項分析前先按方案配置折算。
+ * 擊鍵成本差别很大，所以做各項分析前先按方案配置折算。
  *
  * 只看末尾成串的數字，且整串在選重鍵表中有對應項時才替換，
  * 以免把「第 12 選」的 `12` 誤傷成 `1;`。表中没有的位次保持數字鍵原樣。
@@ -176,7 +176,7 @@ export function 計算速度當量分佈(
  * @param keyPairs 按鍵組合列表
  * @returns 説明文字
  */
-function generateEquivDescription(equivValue: number, keyPairs: string[]): string {
+function generateEquivDescription(equivValue: number, _keyPairs: string[]): string {
   // 根據當量值範圍返回對應的説明
   if (equivValue >= 2.1) {
     return '多爲含小指或無名指的異指大跨排'

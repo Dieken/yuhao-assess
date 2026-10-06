@@ -8,17 +8,10 @@ import {
   InputNumber,
   Checkbox,
   message,
-  Upload,
   Tag,
   Alert,
 } from 'antd'
-import {
-  DownloadOutlined,
-  UploadOutlined,
-  PlusOutlined,
-  ReloadOutlined,
-  PlusCircleOutlined,
-} from '@ant-design/icons'
+import { PlusOutlined, PlusCircleOutlined } from '@ant-design/icons'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useState } from 'react'
 import { 當前方案原子狀態, 方案列表原子狀態 } from '@/atoms/scheme'
@@ -30,11 +23,10 @@ import { 連續文本當量分析原子狀態 } from '@/atoms/continuousEquivale
 import { 簡碼效率分析原子狀態 } from '@/atoms/shortCodeEfficiency'
 import { 鍵位熱力分析原子狀態 } from '@/atoms/keyboardHeatmap'
 import { 碼表原子狀態, 原始碼表原子狀態, 編碼預覽數據原子狀態 } from '@/atoms/codeTable'
-import { 加載方案, 創建空白方案, 查找方案鍵名 } from '@/services/schemeService'
+import { 加載方案, 查找方案鍵名 } from '@/services/schemeService'
 import { 清空所有Atom, 應用方案數據, type 方案應用Setters } from '@/services/atomResetService'
 import { useDataPreload } from '@/hooks/useDataPreload'
 import type { 方案配置介面 } from '@/types/scheme'
-import type { UploadFile } from 'antd'
 
 const { Paragraph, Text } = Typography
 const { Option } = Select
@@ -43,12 +35,12 @@ const { TextArea } = Input
 function HomePage() {
   const [當前方案, 設置當前方案] = useAtom(當前方案原子狀態)
   const 方案列表 = useAtomValue(方案列表原子狀態)
-  const [動態選重分析結果, 設置動態選重分析結果] = useAtom(動態選重分析原子狀態)
-  const [靜態重碼分析結果, 設置靜態重碼分析結果] = useAtom(靜態重碼分析原子狀態)
-  const [候選個數分析結果, 設置候選個數分析結果] = useAtom(候選個數分析原子狀態)
-  const [速度當量分析結果, 設置速度當量分析結果] = useAtom(速度當量分析原子狀態)
-  const [簡碼效率分析結果, 設置簡碼效率分析結果] = useAtom(簡碼效率分析原子狀態)
-  const [鍵位熱力分析結果, 設置鍵位熱力分析結果] = useAtom(鍵位熱力分析原子狀態)
+  const 設置動態選重分析結果 = useSetAtom(動態選重分析原子狀態)
+  const 設置靜態重碼分析結果 = useSetAtom(靜態重碼分析原子狀態)
+  const 設置候選個數分析結果 = useSetAtom(候選個數分析原子狀態)
+  const 設置速度當量分析結果 = useSetAtom(速度當量分析原子狀態)
+  const 設置簡碼效率分析結果 = useSetAtom(簡碼效率分析原子狀態)
+  const 設置鍵位熱力分析結果 = useSetAtom(鍵位熱力分析原子狀態)
   const 設置當量詳情 = useSetAtom(當量詳情原子狀態)
   const 設置連續文本當量分析結果 = useSetAtom(連續文本當量分析原子狀態)
   const 設置碼表數據 = useSetAtom(碼表原子狀態)
@@ -74,7 +66,6 @@ function HomePage() {
   }
 
   // 清空所有 atom 狀態（統一函數）
-  const 清空所有原子狀態 = () => 清空所有Atom(方案Setters)
 
   // 使用數據預加載狀態
   const {
@@ -83,7 +74,7 @@ function HomePage() {
     allLoaded: 所有數據已加載,
   } = useDataPreload()
 
-  // 方案列表由頂欄 AppHeader 統一加載（它在每個路由下都掛着），這裡只消費
+  // 方案列表由頂欄 AppHeader 統一加載（它在每個路由下都掛着），這裏只消費
 
   // 加載預設方案
   const 處理選擇方案 = async (方案鍵名: string) => {
@@ -464,7 +455,7 @@ function HomePage() {
                   ))}
                   {選重鍵衝突列表.length > 0 && (
                     <Text type="warning">
-                      {選重鍵衝突列表.join('、')} 也出現在本方案的編碼裡，實際輸入時會衝突
+                      {選重鍵衝突列表.join('、')} 也出現在本方案的編碼裏，實際輸入時會衝突
                     </Text>
                   )}
                 </div>
