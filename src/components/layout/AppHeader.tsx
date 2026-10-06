@@ -28,7 +28,7 @@ import {
 } from '@/atoms/localSchemes'
 import { 創建空白方案, 加載方案, 列出可用方案, 查找方案鍵名 } from '@/services/schemeService'
 import { 清空所有Atom, 應用方案數據, type 方案應用Setters } from '@/services/atomResetService'
-import { 導出方案配置JSON } from '@/services/exportService'
+import { 導出方案配置JSON, 收集測評結果 } from '@/services/exportService'
 import { 觸發所有分析計算 } from '@/services/triggerAnalysisService'
 import type { 方案列表項介面, 方案配置介面 } from '@/types/scheme'
 import type { RcFile } from 'antd/es/upload'
@@ -38,6 +38,15 @@ const HeaderContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
+
+  /* 頂欄底色是深的，而 antd 的禁用態是 4% 黑底 ＋ 25% 黑字——兩者在深色上
+     都看不見，整顆按鈕連字帶框一起消失。「重算」在沒有碼表時就是禁用的，
+     於是頂欄上會憑空出現一個黑方塊。這裏把禁用態改成淺色的半透明。 */
+  button:disabled {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.45);
+  }
 `
 
 const PageTitle = styled.h1`
@@ -79,6 +88,17 @@ export function AppHeader() {
   const 簡碼效率分析結果 = useAtomValue(簡碼效率分析原子狀態)
   const 鍵位熱力分析結果 = useAtomValue(鍵位熱力分析原子狀態)
   const 編碼預覽數據 = useAtomValue(編碼預覽數據原子狀態)
+
+  /** 導出與克隆都要這一份，收在一處免得兩邊各列各的 */
+  const 當前分析結果 = {
+    靜態重碼分析結果,
+    動態選重分析結果,
+    候選個數分析結果,
+    速度當量分析結果,
+    簡碼效率分析結果,
+    鍵位熱力分析結果,
+    連續文本當量分析結果,
+  }
 
   // 本地方案
   const [本地方案列表, 設置本地方案列表] = useAtom(本地方案列表原子狀態)
@@ -182,19 +202,7 @@ export function AppHeader() {
       message.warning('請先選擇或創建方案')
       return
     }
-    const 結果 = 導出方案配置JSON(
-      當前方案,
-      {
-        靜態重碼分析結果,
-        動態選重分析結果,
-        候選個數分析結果,
-        速度當量分析結果,
-        簡碼效率分析結果,
-        鍵位熱力分析結果,
-        連續文本當量分析結果,
-      },
-      false
-    )
+    const 結果 = 導出方案配置JSON(當前方案, 當前分析結果, false)
     if (結果.success) {
       message.success(結果.message || '導出成功')
     } else {
@@ -219,17 +227,13 @@ export function AppHeader() {
       return
     }
     const 現在 = new Date().toISOString()
+    // 當前方案身上是沒有測評結果的（`應用方案數據` 載入時就把它拆走了，
+    // 結果只活在各個 atom 裏），所以快照與克隆都要在這裏現收一份。
+    const 當前測評結果 = 收集測評結果(當前分析結果)
     // 1. 原方案快照（含當前測評結果）存入 local schemes
     const 原方案快照: 方案配置介面 = {
       ...當前方案,
-      測評結果: {
-        動態選重分析: 動態選重分析結果 ?? undefined,
-        靜態重碼分析: 靜態重碼分析結果 ?? undefined,
-        候選個數分析: 候選個數分析結果 ?? undefined,
-        速度當量分析: 速度當量分析結果 ?? undefined,
-        簡碼效率分析: 簡碼效率分析結果 ?? undefined,
-        鍵位熱力: 鍵位熱力分析結果 ?? undefined,
-      },
+      測評結果: 當前測評結果,
     }
     const 原標識符 = 當前方案.元數據.標識符
     設置本地方案列表(prev => {
@@ -250,6 +254,10 @@ export function AppHeader() {
         創建時間: 現在,
         更新時間: 現在,
       },
+      // 克隆的那一份也要帶上結果：自動同步那支 hook 在剛切換標識符時會
+      // 刻意跳過一次，而克隆之後沒有任何結果 atom 變化，它就再也不會觸發，
+      // 這裏不寫的話克隆出來的方案在 localStorage 裏永遠是空的。
+      測評結果: 當前測評結果,
     }
     設置本地方案列表(prev => [...prev.filter(s => s.元數據.標識符 !== 新標識符), 克隆方案])
     設置當前方案(克隆方案)

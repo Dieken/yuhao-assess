@@ -9,8 +9,8 @@
  *   避免用户在主頁每次輸入都觸發 localStorage 寫入。
  *   方案配置的持久化由 當前方案原子狀態（atomWithStorage）自身負責。
  * - 測評結果同步加 3000ms debounce，避免重算時多個結果依次完成導致連續寫入。
- * - 連續文本當量按導出時的緊湊格點形式存檔（`壓縮連續文本當量結果`），
- *   否則幾萬個原始樣本值會把 localStorage 撑爆。
+ * - 收結果走 `收集測評結果`，與導出、克隆同一支：七項一次收齊，
+ *   連續文本當量按緊湊格點存檔，否則幾萬個原始樣本值會把 localStorage 撑爆。
  *
  * 應在 MainLayout 中調用一次。
  */
@@ -24,7 +24,8 @@ import { 候選個數分析原子狀態 } from '@/atoms/maximumCandidates'
 import { 速度當量分析原子狀態 } from '@/atoms/speedEquivalent'
 import { 簡碼效率分析原子狀態 } from '@/atoms/shortCodeEfficiency'
 import { 鍵位熱力分析原子狀態 } from '@/atoms/keyboardHeatmap'
-import { 連續文本當量分析原子狀態, 壓縮連續文本當量結果 } from '@/atoms/continuousEquivalent'
+import { 連續文本當量分析原子狀態 } from '@/atoms/continuousEquivalent'
+import { 收集測評結果 } from '@/services/exportService'
 import { 本地方案列表原子狀態, 當前本地方案標識符原子狀態 } from '@/atoms/localSchemes'
 
 export function useLocalSchemeSyncMetrics() {
@@ -78,14 +79,15 @@ export function useLocalSchemeSyncMetrics() {
             ...方案,
             測評結果: {
               ...方案.測評結果,
-              動態選重分析: 動態選重 ?? undefined,
-              靜態重碼分析: 靜態重碼 ?? undefined,
-              候選個數分析: 候選個數 ?? undefined,
-              速度當量分析: 速度當量 ?? undefined,
-              簡碼效率分析: 簡碼效率 ?? undefined,
-              鍵位熱力: 鍵位熱力 ?? undefined,
-              // 存檔形式與導出一致：分佈壓成緊湊格點，恢復時由 應用方案數據 展開
-              連續文本當量: 連續文本當量 ? 壓縮連續文本當量結果(連續文本當量) : undefined,
+              ...收集測評結果({
+                靜態重碼分析結果: 靜態重碼,
+                動態選重分析結果: 動態選重,
+                候選個數分析結果: 候選個數,
+                速度當量分析結果: 速度當量,
+                簡碼效率分析結果: 簡碼效率,
+                鍵位熱力分析結果: 鍵位熱力,
+                連續文本當量分析結果: 連續文本當量,
+              }),
             },
           }
         })
